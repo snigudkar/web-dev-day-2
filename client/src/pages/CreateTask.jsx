@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import API from "../api"; 
+import API from "../api";
 import { useNavigate } from "react-router-dom";
-import { FaTasks, FaArrowLeft, FaTimes } from "react-icons/fa"; 
+import { FaTasks, FaArrowLeft, FaTimes } from "react-icons/fa";
+
 
 const CreateTask = () => {
   const [title, setTitle] = useState("");
@@ -11,10 +12,11 @@ const CreateTask = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
-        const { data } = await API.get("/api/user/get-team"); 
+        const { data } = await API.get("/api/user/get-team");
         setTeamMembers(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching team:", error);
@@ -23,10 +25,12 @@ const CreateTask = () => {
     fetchTeamMembers();
   }, []);
 
-  // ✅ Add member to chips
+
+  // Add member to chips
   const addMember = (e) => {
     const selectedId = e.target.value;
     if (!selectedId) return;
+
 
     const member = teamMembers.find(m => m._id === selectedId);
     // Prevent duplicates
@@ -35,11 +39,16 @@ const CreateTask = () => {
     }
     e.target.value = ""; // Reset dropdown
   };
-
-  // ✅ Remove member from chips
+  //assignedTo = [{ _id: "1", name: "Admin" }];
+  /*assignedTo = [
+  { _id: "1", name: "Admin" },
+  { _id: "2", name: "Jim" }
+]; */
+  // Remove member from chips
   const removeMember = (id) => {
     setAssignedTo(assignedTo.filter(m => m._id !== id));
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,8 +58,8 @@ const CreateTask = () => {
       await API.post("/api/tasks", {
         title,
         description,
-        assignedTo: memberIds, 
-        priority, 
+        assignedTo: memberIds,
+        priority,
       });
       navigate("/tasks");
     } catch (error) {
@@ -58,6 +67,14 @@ const CreateTask = () => {
     }
   };
 
+
+  /*{
+  "title": "Fix Bug",
+  "description": "The login button is broken",
+  "assignedTo": ["1", "2"],
+  "priority": "High"
+}
+*/
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
@@ -66,11 +83,13 @@ const CreateTask = () => {
           <button onClick={() => navigate("/tasks")} className="text-white/80 hover:text-white"><FaArrowLeft size={20} /></button>
         </div>
 
+
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Task Title</label>
             <input type="text" className="w-full px-4 py-3 rounded-lg border focus:border-blue-500 outline-none" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -82,6 +101,7 @@ const CreateTask = () => {
               </select>
             </div>
 
+
             <div>
               <label className="block text-gray-700 font-semibold mb-2">Assign Team Members</label>
               <select className="w-full px-4 py-3 rounded-lg border outline-none mb-3" onChange={addMember}>
@@ -91,7 +111,8 @@ const CreateTask = () => {
                 ))}
               </select>
 
-              {/* ✅ MODERN CHIPS SECTION */}
+
+              {/* Modern Chips*/}
               <div className="flex flex-wrap gap-2">
                 {assignedTo.map(member => (
                   <div key={member._id} className="flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
@@ -105,10 +126,12 @@ const CreateTask = () => {
             </div>
           </div>
 
+
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Description</label>
             <textarea rows="3" className="w-full px-4 py-3 rounded-lg border focus:border-blue-500 outline-none" value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
+
 
           <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-all">Save Task</button>
         </form>
@@ -116,5 +139,6 @@ const CreateTask = () => {
     </div>
   );
 };
+
 
 export default CreateTask;

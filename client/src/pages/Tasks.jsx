@@ -3,16 +3,20 @@ import API from "../api";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle, FaCheckCircle, FaTasks } from "react-icons/fa";
 
+
 const Tasks = ({ user }) => {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
+
 
   // Fetch tasks from the server
   const fetchTasks = async () => {
     try {
       // If user is member, we only want tasks assigned to them
       const queryParam = user?.role === "admin" ? "" : `?userId=${user?._id}`;
+      //  /api/tasks<---admin
+      //  /api/tasks?userId=123 <-- filter tasks for members
       const { data } = await API.get(`/api/tasks${queryParam}`);
       setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -21,22 +25,24 @@ const Tasks = ({ user }) => {
     }
   };
 
+
   useEffect(() => {
     if (user) {
       fetchTasks();
     }
   }, [user]);
 
+
   // Handle status change - Deletes task if "completed" is chosen
   const handleStatusChange = async (taskId, newStatus) => {
     try {
       // The backend logic handles the deletion if status === "completed"
       await API.put(`/api/tasks/${taskId}`, { status: newStatus });
-      
+     
       if (newStatus === "completed") {
         alert("Task completed and removed successfully!");
       }
-      
+     
       // Refresh the list to reflect changes
       fetchTasks();
     } catch (error) {
@@ -45,11 +51,13 @@ const Tasks = ({ user }) => {
     }
   };
 
+
   // Local filtering for the UI tabs
   const filteredTasks = tasks.filter((task) => {
     if (filter === "all") return true;
     return task.status === filter;
   });
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -63,10 +71,10 @@ const Tasks = ({ user }) => {
             Logged in as: <span className="text-blue-600 font-semibold">{user?.name}</span> ({user?.role})
           </p>
         </div>
-        
+       
         {user?.role === "admin" && (
-          <button 
-            onClick={() => navigate("/create-task")} 
+          <button
+            onClick={() => navigate("/create-task")}
             className="bg-blue-600 text-white px-6 py-2.5 rounded-lg shadow-lg hover:bg-blue-700 transition-all font-semibold"
           >
             + Create New Task
@@ -74,15 +82,16 @@ const Tasks = ({ user }) => {
         )}
       </div>
 
+
       {/* Tabs / Filters */}
       <div className="flex gap-8 border-b border-gray-200 mb-8">
         {["all", "todo", "inprogress"].map((tab) => (
-          <button 
-            key={tab} 
-            onClick={() => setFilter(tab)} 
+          <button
+            key={tab}
+            onClick={() => setFilter(tab)}
             className={`capitalize pb-4 text-sm font-bold transition-all relative ${
-              filter === tab 
-                ? "text-blue-600 border-b-2 border-blue-600" 
+              filter === tab
+                ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-400 hover:text-gray-600"
             }`}
           >
@@ -90,6 +99,7 @@ const Tasks = ({ user }) => {
           </button>
         ))}
       </div>
+
 
       {/* Tasks Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,10 +115,10 @@ const Tasks = ({ user }) => {
                 <p className="text-gray-600 text-sm mb-6 line-clamp-3">
                   {task.description}
                 </p>
-                
+               
                 <div className="mb-6">
                   <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Update Status</label>
-                  <select 
+                  <select
                     className="w-full text-sm border border-gray-200 rounded-lg p-2 bg-gray-50 font-semibold text-blue-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                     value={task.status}
                     onChange={(e) => handleStatusChange(task._id, e.target.value)}
@@ -119,6 +129,7 @@ const Tasks = ({ user }) => {
                   </select>
                 </div>
               </div>
+
 
               <div className="border-t border-gray-50 pt-4 mt-2">
                 <p className="text-[10px] text-gray-400 uppercase font-bold mb-3 tracking-wider">Team Members</p>
@@ -148,5 +159,6 @@ const Tasks = ({ user }) => {
     </div>
   );
 };
+
 
 export default Tasks;
