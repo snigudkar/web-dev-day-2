@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api"; // Ensure this path is correct
+import API from "../api";
 
 const Register = ({ setUser }) => {
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    // FIX 1: Initialize these properly (strings), not just variable names
-    role: "user", // Change to "admin" if you want to test admin features immediately
+    role: "user",
     team: ""      
   });
 
@@ -17,10 +16,8 @@ const Register = ({ setUser }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // Ensure your backend endpoint is actually "/signup" (check your server routes)
-      const { data } = await API.post("/api/signup", form);
       
-      // FIX 2: Use "userInfo" to match App.jsx and Dashboard.jsx
+      const { data } = await API.post("/api/signup", form); 
       localStorage.setItem("userInfo", JSON.stringify(data));
       
       setUser(data);

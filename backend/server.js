@@ -87,10 +87,13 @@ app.get("/api/user/available", async (req, res) => {
   res.json(users);
 });
 
-// Paste snippet here
+
+app.post("/api/user/add-to-team", async (req, res) => {
+  const user = await User.findOneAndUpdate({ email: req.body.email }, { isActive: true }, { new: true });
+  res.json(user);
+});
 
 
-//
 
 
 // --- TASK ROUTES ---
